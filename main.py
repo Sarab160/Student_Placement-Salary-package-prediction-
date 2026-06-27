@@ -24,7 +24,19 @@ y=df["salary_package_lpa"]
 print(df["branch"].unique())
 
 le=LabelEncoder()
+d_le=df["gender"]
 encode_g=le.fit_transform(df["gender"])
+le_encode=pd.DataFrame(encode_g,columns=["gender"])
+
+X_1=pd.concat([x,le_encode],axis=1)
+
+#=========== onhot =====
+ohe=OneHotEncoder(sparse_output=False,drop="first")
+ohe_col=df[["branch"]]
+t=ohe.fit_transform(ohe_col)
+t_data=pd.DataFrame(t,columns=ohe.get_feature_names_out(["branch"]))
+
+X_2=pd.concat([X_1,t_data],axis=1)
 # 'student_id', 'age', 'gender', 'cgpa', 'branch', 'college_tier',
 #        'internships_count', 'projects_count', 'certifications_count',
 #        'coding_skill_score', 'aptitude_score', 'communication_skill_score',
