@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder,OneHotEncoder,OrdinalEncoder,StandardScaler
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
-from keras.layers import Dense,BatchNormalization
+from keras.layers import Dense,BatchNormalization,Dropout
 from keras.models import Sequential
 from keras.callbacks import EarlyStopping
 df=pd.read_csv("student.csv")
@@ -63,23 +63,24 @@ print(X.shape)
 
 ann=Sequential()
 
-ann.add(Dense(16,input_dim=27,activation=tf.keras.activations.relu))
-ann.add(BatchNormalization())
-ann.add(Dense(13,activation=tf.keras.activations.relu))
-ann.add(BatchNormalization())
-ann.add(Dense(11,activation=tf.keras.activations.relu))
-ann.add(BatchNormalization())
-ann.add(Dense(9,activation=tf.keras.activations.relu))
-ann.add(BatchNormalization())
-ann.add(Dense(7,activation=tf.keras.activations.relu))
-ann.add(BatchNormalization())
-ann.add(Dense(5,activation=tf.keras.activations.relu))
-ann.add(BatchNormalization())
-ann.add(Dense(3,activation=tf.keras.activations.linear))
+
+ann.add(Dense(18, input_dim=27, activation="relu"))
+ann.add(Dense(15, activation="relu"))
+ann.add(Dense(12, activation="relu"))
+ann.add(Dense(9, activation="relu"))
+ann.add(Dense(6, activation="relu"))
+ann.add(Dense(3, activation="relu"))
+ann.add(Dense(1, activation="linear"))
 
 ann.compile(optimizer="adam",loss="mse",metrics=["mae"])
 
-history=ann.fit(x_train,y_train,batch_size=250,epochs=100,callbacks=EarlyStopping())
+early_stop = EarlyStopping(
+    monitor="val_loss",
+    patience=10,
+    restore_best_weights=True
+)
+
+history=ann.fit(x_train,y_train,batch_size=1000,epochs=100)
 
 print("Train MAE for all the epochs ======================================")
 print(history.history["mae"])
